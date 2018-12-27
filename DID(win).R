@@ -18,7 +18,7 @@ raw.data <- read.csv("DIDdata.fr.csv", fileEncoding="utf-8") #データ読み込
 
 data <- raw.data[, !(colnames(raw.data) %in% 
 	c("Area.ha.", "Employment.in.2012", "Employment.in.2001", "Population.in.2010", 
-		"Population.in.2000", "Road.length.in.2010", "Road.length.in.2000"))]# 不要な行削除
+	"Population.in.2000", "Road.length.in.2010", "Road.length.in.2000"))]# 不要な行削除
 
 #2010年データセット抽出
 data2010 <- cbind(data[,1:4],data[,seq(5,14,2)], data[,seq(14,23,2)], 
@@ -531,12 +531,166 @@ SEM_LP_NRTe_TRE <- errorsarlm(formula = log(Land.Price) ~ TRE.NRT + AFT
 
 
 ###############UURA DID################
-########SLM and SEM(mobility)#########
+########OLS,SLM and SEM(mobility)#########
+#OLS
+PD.HND.OLSm_UURA <- lm(log(Population.density) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.HND , data=panel.HND)
+ED.HND.OLSm_UURA <- lm(log(Employment.density) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.HND , data=panel.HND)
+LP.HND.OLSm_UURA <- lm(log(Land.Price) ~ UURA + AFT + UURA_AFT  
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.HND , data=panel.HND)
 
-########SLM and SEM(mobility)#########
-########SLM and SEM(Ef.D)#########
+PD.NRT.OLSm_UURA <- lm(log(Population.density) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.NRT , data=panel.NRT)
+ED.NRT.OLSm_UURA <- lm(log(Employment.density) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.NRT , data=panel.NRT)
+LP.NRT.OLSm_UURA <- lm(log(Land.Price) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.NRT , data=panel.NRT)
+#SLM
+SLM_PD_HNDm_UURA <- lagsarlm(formula = log(Population.density) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.HND, data = panel.HND, listw = swm_HND)
+SLM_ED_HNDm_UURA <- lagsarlm(formula = log(Employment.density) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.HND, data = panel.HND, listw = swm_HND)
+SLM_LP_HNDm_UURA <- lagsarlm(formula = log(Land.Price) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.HND, data = panel.HND, listw = swm_HND)
 
-########SLM and SEM(Ef.D)#########
+SLM_PD_NRTm_UURA <- lagsarlm(formula = log(Population.density) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+SLM_ED_NRTm_UURA <- lagsarlm(formula = log(Employment.density) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+SLM_LP_NRTm_UURA <- lagsarlm(formula = log(Land.Price) ~~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+#SEM
+SEM_PD_HNDm_UURA <- errorsarlm(formula = log(Population.density) ~  UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.HND, data = panel.HND, listw = swm_HND)
+SEM_ED_HNDm_UURA <- errorsarlm(formula = log(Employment.density) ~  UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.HND, data = panel.HND, listw = swm_HND)
+SEM_LP_HNDm_UURA <- errorsarlm(formula = log(Land.Price) ~  UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.HND, data = panel.HND, listw = swm_HND)
+
+SEM_PD_NRTm_UURA <- errorsarlm(formula = log(Population.density) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+SEM_ED_NRTm_UURA <- errorsarlm(formula = log(Employment.density) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+SEM_LP_NRTm_UURA <- errorsarlm(formula = log(Land.Price) ~ UURA + AFT + UURA_AFT 
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Mobility + Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+########OLS,SLM and SEM(mobility)#########
+
+########OLS,SLM and SEM(Ef.D)#########
+PD.HND.OLSe_UURA <- lm(log(Population.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Ef.D + Accessibility.to.HND, data=panel.HND)
+PD.NRT.OLSe_UURA <- lm(log(Population.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Ef.D + Accessibility.to.HND, data=panel.HND)
+ED.HND.OLSe_UURA <- lm(log(Employment.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Ef.D + Accessibility.to.HND, data=panel.HND)
+
+ED.NRT.OLSe_UURA <- lm(log(Employment.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Ef.D + Accessibility.to.NRT, data=panel.NRT)
+LP.HND.OLSe_UURA <- lm(log(Land.Price) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Ef.D + Accessibility.to.NRT, data=panel.NRT)
+LP.NRT.OLSe_UURA <- lm(log(Land.Price) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards 
+	+ Ef.D + Accessibility.to.NRT, data=panel.NRT)
+#SLM
+SLM_PD_HNDe_UURA <- lagsarlm(formula = log(Population.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.HND, data=panel.HND, listw=swm_HND)
+SLM_ED_HNDe_UURA <- lagsarlm(formula = log(Employment.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.HND, data=panel.HND, listw=swm_HND)
+SLM_LP_HNDe_UURA <- lagsarlm(formula = log(Land.Price) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.HND, data=panel.HND, listw=swm_HND)
+
+SLM_PD_NRTe_UURA <- lagsarlm(formula = log(Population.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+SLM_ED_NRTe_UURA <- lagsarlm(formula = log(Employment.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+SLM_LP_NRTe_UURA <- lagsarlm(formula = log(Land.Price) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+#SEM
+SEM_PD_HNDe_UURA <- errorsarlm(formula = log(Population.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.HND, data=panel.HND, listw=swm_HND))
+SEM_ED_HNDe_UURA <- errorsarlm(formula = log(Employment.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.HND, data=panel.HND, listw=swm_HND)
+SEM_LP_HNDe_UURA <- errorsarlm(formula = log(Land.Price) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.HND, data=panel.HND, listw=swm_HND)
+
+SEM_PD_NRTe_UURA <- errorsarlm(formula = log(Population.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+SEM_ED_NRTe_UURA <- errorsarlm(formula = log(Employment.density) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+SEM_LP_NRTe_UURA <- errorsarlm(formula = log(Land.Price) ~ UURA + AFT + UURA_AFT
+	+ Area + Distance.to.Tokyo.Station + Distance.to.the.nearest.station 
+	+ Disntace.to.the.nearest.JR.station + Road.density + Tokyo23wards + Ef.D
+	+ Accessibility.to.NRT, data=panel.NRT, listw=swm_NRT)
+########OLS,SLM and SEM(Ef.D)#########
 ###############UURA DID################
 
 
