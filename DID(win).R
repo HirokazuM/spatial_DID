@@ -103,30 +103,6 @@ panel$TRE.NRTonly[3022:3024] <- 1
 
 str(panel)
 head(panel)
-#####10分閾値つくる#####
-acc_HND2010 <- data2010$Accessibility.to.HND
-acc_NRT2010 <- data2010$Accessibility.to.NRT
-acc_HND2000 <- data2000$Accessibility.to.HND
-acc_NRT2000 <- data2000$Accessibility.to.NRT
-
-dif_HND <- as.data.frame(acc_HND2000 - acc_HND2010)
-dif_NRT <- as.data.frame(acc_NRT2000 - acc_NRT2010)
-names(dif_HND) <- c("dif_HND")
-names(dif_NRT) <- c("dif_NRT")
-dif_HND$num <- 1:2843
-dif_NRT$num <- 1:2843
-
-t_HND <- subset(dif_HND, dif_HND >= 10)
-t_NRT <- subset(dif_NRT, dif_NRT >= 10)
-HNDtre_10 <- matrix(0, 2843, 1)
-NRTtre_10 <- matrix(0, 2843, 1)
-
-HNDtre_10[t_HND$num,] <- 1
-HNDtre_10 <- rbind(HNDtre_10, HNDtre_10)
-NRTtre_10[t_NRT$num,] <- 1
-NRTtre_10 <- rbind(NRTtre_10, NRTtre_10)
-#####10分閾値つくる#####
-head(panel)
 ################データの妥当性の確認###############
 summary(panel)
 sapply(panel, function(y) sum(is.na(y)))
@@ -145,7 +121,7 @@ panel.imp <- panel[, !(colnames(panel) %in%
 		"Accessibility.to.NRT", "TRE.HND", "TRE.NRT", "did.HND", "did.NRT", 
 		"UURA", "UURA_AFT", "HNDorUURA", "NRTorUURA", "HNDandUURA", "NRTandUURA",
 		"HNDorUURA_AFT", "NRTorUURA_AFT", "HNDandUURA_AFT", "NRTandUURA_AFT", 
-		"TRE.HNDandNRT", "TRE.HNDonly", "TRE.NRTonly" ))] 
+		"TRE.HNDandNRT", "TRE.HNDonly", "TRE.NRTonly" ))]
 head(panel.imp)
 str(panel.imp)
 summary(panel.imp)
@@ -177,14 +153,6 @@ panel.HND <- completed.panel[-c(179:181,3022:3024),]
 panel.NRT <- completed.panel[-c(2545,5388),]
 panel.HNDandNRT <- completed.panel[-c(179:181,2545,3022:3024,5388),]
 
-panel_10 <- completed.panel
-panel_10$TRE.HND <- HNDtre_10
-panel_10$TRE.NRT <- NRTtre_10
-panel_10$did.HND <- HNDtre_10*panel_10$AFT
-panel_10$did.NRT <- NRTtre_10*panel_10$AFT
-panel.HND_10 <- panel_10[-c(179:181,3022:3024),]
-panel.NRT_10 <- panel_10[-c(2545,5388),]
-
 #######相関行列#######
 cormatrix.HND <- correlate(panel.HND[,-1:-3])
 cormatrix.NRT <- correlate(panel.NRT[,-1:-3])
@@ -199,9 +167,6 @@ write.csv(cormatrix.NRT, file="correlationNRT.csv")
 #######相関行列#######
 ########多重代入法#######
 ################欠損値対応###############
-
-completed.panel$HNDtre_10 <- HNDtre_10
-completed.panel$NRTtre_10 <- NRTtre_10
 
 ################プロペンシティスコアマッチング###############
 comp <- completed.panel[complete.cases(completed.panel),]
@@ -700,6 +665,24 @@ htmlreg(list(OLS_LP_HND, SLM_LP_HND, SEM_LP_HND, SAC_LP_HND,
 	custom.model.names=c("OLS", "SLM", "SEM", "SAC", "OLS", "SLM", "SEM", "SAC"), 
 	digits = 3, caption = "Estimation Results of DID Analyses for Ln(Land Price)", 
 	caption.above =TRUE, "LP_TRE.html")
+
+htmlreg(list(OLS_PD_HND, SAC_PD_HND, SDEM_PD_HND, MAN_PD_HND, 
+	OLS_PD_NRT, SAC_PD_NRT, SDEM_PD_NRT, MAN_PD_NRT), 
+	custom.model.names=c("OLS", "SACAR", "SDEM", "MAN", "OLS", "SACAR", "SDEM", "MAN"), 
+	digits = 3, caption = "Estimation Results of DID Analyses for Ln(Population density)", 
+	caption.above =TRUE, "PD_TRE_spatial.html")
+
+htmlreg(list(OLS_ED_HND, SAC_ED_HND, SDEM_ED_HND, MAN_ED_HND, 
+	OLS_ED_NRT, SAC_ED_NRT, SDEM_ED_NRT, MAN_ED_NRT), 
+	custom.model.names=c("OLS", "SACAR", "SDEM", "MAN", "OLS", "SACAR", "SDEM", "MAN"), 
+	digits = 3, caption = "Estimation Results of DID Analyses for Ln(Population density)", 
+	caption.above =TRUE, "ED_TRE_spatial.html")
+
+htmlreg(list(OLS_LP_HND, SAC_LP_HND,　SDEM_LP_HND,　MAN_LP_HND, 
+	OLS_LP_NRT, SAC_LP_NRT, SDEM_LP_NRT, MAN_LP_NRT), 
+	custom.model.names=c("OLS", "SACAR", "SDEM", "MAN", "OLS", "SACAR", "SDEM", "MAN"), 
+	digits = 3, caption = "Estimation Results of DID Analyses for Ln(Population density)", 
+	caption.above =TRUE, "LP_TRE_spatial.html")
 ###############TRE DID################
 ###############HNDonly NRTonly DID################
 htmlreg(list(OLS_PD_HNDonly, SLM_PD_HNDonly,　SEM_PD_HNDonly,　SDM_PD_HNDonly, 
